@@ -1,0 +1,19 @@
+src/app/GitUI/CommandsDialogs/FormCheckoutBranch.cs
+  s_b2eee4f66000bd::t_48309a27f901ac 275-278,289,299
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "51dc4848ab02bb7c793e7a853d1be34f70a48b33",
+  "prompts": {},
+  "sessions": {
+    "s_b2eee4f66000bd": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e3663dfedffe8Y86meXXAhpOTd",
+        "model": "unknown"
+      },
+      "human_author": "Бобровский Владимир Сергеевич <bobrovskiivs@sovcombank.ru>"
+    }
+  }
+}
