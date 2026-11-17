@@ -1,0 +1,14 @@
+tests/app/UnitTests/GitUI.Tests/CommandsDialogs/FormCheckoutBranchTests.cs
+  h_431b9a07b48b30 25,35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "97b1f7e2fbb3bb850666484034d0cf07964b573b",
+  "prompts": {},
+  "humans": {
+    "h_431b9a07b48b30": {
+      "author": "Бобровский Владимир Сергеевич <bobrovskiivs@sovcombank.ru>"
+    }
+  }
+}
