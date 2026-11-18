@@ -192,20 +192,20 @@ public partial class FormCheckoutBranch : GitExtensionsDialog
         string previousBranch = Branches.Text;
         Branches.Items.Clear();
 
-        IEnumerable<string> branchNames;
+        string[] branchNames;
 
         if (_containObjectIds is null)
         {
             IEnumerable<IGitRef> branches = LocalBranch.Checked ? GetLocalBranches() : GetRemoteBranches();
 
-            branchNames = branches.Select(b => b.Name);
+            branchNames = [.. branches.Select(b => b.Name).Where(name => !string.IsNullOrWhiteSpace(name))];
         }
         else
         {
-            branchNames = GetContainsObjectIdBranches();
+            branchNames = [.. GetContainsObjectIdBranches().Where(name => !string.IsNullOrWhiteSpace(name))];
         }
 
-        Branches.Items.AddRange([.. branchNames.Where(name => !string.IsNullOrWhiteSpace(name))]);
+        Branches.Items.AddRange(branchNames);
 
         if (_containObjectIds is not null && Branches.Items.Count == 1)
         {
