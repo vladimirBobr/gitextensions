@@ -1,0 +1,19 @@
+tests/app/UnitTests/GitUI.Tests/CommandsDialogs/FormCheckoutBranchTests.cs
+  s_458cd5c0aba2b6::t_b36979cb3aff74 7-58,60-110
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "399ec5c8e7f15622acdd53d95d7baa7ea9ddd310",
+  "prompts": {},
+  "sessions": {
+    "s_458cd5c0aba2b6": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e1189cb63ffewnqR4WTSc0rA48",
+        "model": "unknown"
+      },
+      "human_author": "Бобровский Владимир Сергеевич <bobrovskiivs@sovcombank.ru>"
+    }
+  }
+}
