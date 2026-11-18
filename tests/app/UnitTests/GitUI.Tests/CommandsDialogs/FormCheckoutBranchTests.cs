@@ -4,25 +4,108 @@ namespace GitUITests.CommandsDialogs;
 
 public sealed class FormCheckoutBranchTests
 {
-    [TestCase("", new[] { "main" }, "", TestName = "Empty input returns empty name")]
-    [TestCase("   ", new[] { "main" }, "", TestName = "Whitespace input is treated as empty")]
-    [TestCase("main", new[] { "main", "dev" }, "main", TestName = "Name is kept when it exists in the new list")]
-    [TestCase("origin/feature", new[] { "main", "feature" }, "feature", TestName = "Remote prefix is stripped when the local branch exists")]
-    [TestCase("origin/feature/login", new[] { "main", "feature/login" }, "feature/login", TestName = "Remote prefix is stripped for nested branch names")]
-    [TestCase("feature", new[] { "origin/feature", "upstream/dev" }, "origin/feature", TestName = "Remote branch is found for a typed local name")]
-    [TestCase("feature/login", new[] { "origin/feature/login" }, "origin/feature/login", TestName = "Remote branch is found for a typed nested local name")]
-    [TestCase("feature", new[] { "upstream/feature", "origin/feature" }, "upstream/feature", TestName = "First matching remote wins")]
-    [TestCase("demo/2026-11-11", new[] { "main", "dev" }, "demo/2026-11-11", TestName = "Unknown name is kept as free text")]
-    [TestCase("origin/demo/2026-11-11", new[] { "main", "dev" }, "origin/demo/2026-11-11", TestName = "Unknown remote name is kept as free text")]
-    [TestCase("feature", new[] { "origin/feature2" }, "feature", TestName = "Partial suffix does not match")]
-    [TestCase("feature", new string[0], "feature", TestName = "Name is kept when the new list is empty")]
-    [TestCase("Feature", new[] { "origin/feature" }, "Feature", TestName = "Matching is case sensitive")]
-    [TestCase("origin/feature/login", new[] { "login" }, "origin/feature/login", TestName = "Unrelated shorter local branch is not matched")]
-    [TestCase("login", new[] { "origin/feature/login" }, "login", TestName = "Unrelated deeper remote branch is not matched")]
-    [TestCase("origin/a/b", new[] { "b", "a/b" }, "a/b", TestName = "Strip removes exactly one segment and prefers the full remainder")]
-    [TestCase("feature/login/x", new[] { "origin/feature/login/x" }, "origin/feature/login/x", TestName = "Remote prefix is added for deeply nested branch names")]
-    public void TranslateBranchName(string previousBranchName, string[] branchNamesInNewMode, string expectedResult)
+    [Test]
+    public void Empty_name_should_be_translated_to_empty_string()
     {
-        FormCheckoutBranch.TranslateBranchName(previousBranchName, branchNamesInNewMode).Should().Be(expectedResult);
+        Translate(previousBranchName: "", branchNamesInNewMode: ["main"]).Should().Be("");
     }
+
+    [Test]
+    public void Whitespace_name_should_be_treated_as_empty()
+    {
+        Translate(previousBranchName: "   ", branchNamesInNewMode: ["main"]).Should().Be("");
+    }
+
+    [Test]
+    public void Name_existing_in_the_new_list_should_be_kept_as_is()
+    {
+        Translate(previousBranchName: "main", branchNamesInNewMode: ["main", "dev"]).Should().Be("main");
+    }
+
+    [Test]
+    public void Local_branch_existing_in_the_new_list_should_strip_the_remote_prefix()
+    {
+        Translate(previousBranchName: "origin/feature", branchNamesInNewMode: ["main", "feature"]).Should().Be("feature");
+    }
+
+    [Test]
+    public void Nested_local_branch_existing_in_the_new_list_should_strip_the_remote_prefix()
+    {
+        Translate(previousBranchName: "origin/feature/login", branchNamesInNewMode: ["main", "feature/login"]).Should().Be("feature/login");
+    }
+
+    [Test]
+    public void Remote_branch_existing_in_the_new_list_should_add_the_remote_prefix()
+    {
+        Translate(previousBranchName: "feature", branchNamesInNewMode: ["origin/feature", "upstream/dev"]).Should().Be("origin/feature");
+    }
+
+    [Test]
+    public void Nested_remote_branch_existing_in_the_new_list_should_add_the_remote_prefix()
+    {
+        Translate(previousBranchName: "feature/login", branchNamesInNewMode: ["origin/feature/login"]).Should().Be("origin/feature/login");
+    }
+
+    [Test]
+    public void Several_matching_remote_branches_should_use_the_first_match()
+    {
+        Translate(previousBranchName: "feature", branchNamesInNewMode: ["upstream/feature", "origin/feature"]).Should().Be("upstream/feature");
+    }
+
+    [Test]
+    public void Unknown_name_should_be_kept_as_free_text()
+    {
+        Translate(previousBranchName: "demo/2026-11-11", branchNamesInNewMode: ["main", "dev"]).Should().Be("demo/2026-11-11");
+    }
+
+    [Test]
+    public void Unknown_remote_name_should_be_kept_as_free_text()
+    {
+        Translate(previousBranchName: "origin/demo/2026-11-11", branchNamesInNewMode: ["main", "dev"]).Should().Be("origin/demo/2026-11-11");
+    }
+
+    [Test]
+    public void Name_matching_only_a_partial_suffix_should_be_kept_as_free_text()
+    {
+        Translate(previousBranchName: "feature", branchNamesInNewMode: ["origin/feature2"]).Should().Be("feature");
+    }
+
+    [Test]
+    public void Name_with_an_empty_new_list_should_be_kept_as_free_text()
+    {
+        Translate(previousBranchName: "feature", branchNamesInNewMode: []).Should().Be("feature");
+    }
+
+    [Test]
+    public void Name_differing_only_in_case_should_be_kept_as_free_text()
+    {
+        Translate(previousBranchName: "Feature", branchNamesInNewMode: ["origin/feature"]).Should().Be("Feature");
+    }
+
+    [Test]
+    public void Name_with_an_unrelated_shorter_local_branch_should_be_kept_as_free_text()
+    {
+        Translate(previousBranchName: "origin/feature/login", branchNamesInNewMode: ["login"]).Should().Be("origin/feature/login");
+    }
+
+    [Test]
+    public void Name_with_an_unrelated_deeper_remote_branch_should_be_kept_as_free_text()
+    {
+        Translate(previousBranchName: "login", branchNamesInNewMode: ["origin/feature/login"]).Should().Be("login");
+    }
+
+    [Test]
+    public void Stripping_the_remote_prefix_should_prefer_the_full_remainder()
+    {
+        Translate(previousBranchName: "origin/a/b", branchNamesInNewMode: ["b", "a/b"]).Should().Be("a/b");
+    }
+
+    [Test]
+    public void Adding_the_remote_prefix_should_work_for_deeply_nested_names()
+    {
+        Translate(previousBranchName: "feature/login/x", branchNamesInNewMode: ["origin/feature/login/x"]).Should().Be("origin/feature/login/x");
+    }
+
+    private static string Translate(string previousBranchName, string[] branchNamesInNewMode)
+        => FormCheckoutBranch.TranslateBranchName(previousBranchName, branchNamesInNewMode);
 }
